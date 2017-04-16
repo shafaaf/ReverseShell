@@ -61,13 +61,22 @@ def connectToServer():
 
 		# Other commands
 		else:
-			try:
-				print "\nother commands\n"
-		
+			
+			try:		
+				# Todo: Find better way to get output of script rather than just saying tried
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
-				commandOutput = cmd.stdout.read() + cmd.stderr.read()
-				print "commandOutput is: \n{}".format(commandOutput)
+				
+				# Check if script or not
+				lastArg = commandsWords[len(commandsWords) - 1]
+				print "\ncommandsWords is: {}\n".format(lastArg)
+				if lastArg[-3:] == ".sh":	# script, so just return string saying ran script
+					print "Its a script"
+					commandOutput = "Tried running the script."
+				else: # Not script, so return output from running command
+					print "Not a script"
+					commandOutput = cmd.stdout.read() + cmd.stderr.read()
+					print "commandOutput is: \n{}".format(commandOutput)
 
 			except Exception as e:
 				print "exception is: {}".format(e)
@@ -83,8 +92,6 @@ def connectToServer():
 		sendBack["exception"] = str(exception)
 		sendBack["commandOutput"] = str(commandOutput)
 		# print "sendBack is: {}".format(sendBack)
-		# print "sendBacks exception is: {}".format(sendBack["exception"])
-		# print "sendBacks commandOutput is: {}".format(sendBack["commandOutput"])
 		
 		sendBackFormatted = json.dumps(sendBack) #data serialized
 		s.sendall(sendBackFormatted)
