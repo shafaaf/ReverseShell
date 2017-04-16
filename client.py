@@ -38,6 +38,7 @@ def connectToServer():
 
 		# Extract commands into separate words
 		commandsWords = data.split()
+		print "commandsWords is: {}".format(commandsWords)
 
 		# Other data to send back to client
 		exception = ""
@@ -61,14 +62,12 @@ def connectToServer():
 		# Other commands
 		else:
 			try:
-				#print "\nother commands\n"
+				print "\nother commands\n"
 		
 				# Pipes any output to standard stream				
-				cmd = subprocess.Popen(data, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
-				# Todo: If run scripts, dont do this since stuck forever. e.g for ./runElasticsearch
-				#commandOutput = cmd.stdout.read() + cmd.stderr.read()
-				#print "commandOutput is: \n{}".format(commandOutput)
-
+				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
+				commandOutput = cmd.stdout.read() + cmd.stderr.read()
+				print "commandOutput is: \n{}".format(commandOutput)
 
 			except Exception as e:
 				print "exception is: {}".format(e)
