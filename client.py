@@ -9,6 +9,8 @@
 import os  
 import subprocess
 import socket
+import json
+
 
 # To get home directory
 from os.path import expanduser
@@ -30,20 +32,41 @@ def connectToServer():
 
 		# Extract commands into separate words
 		commandsWords = data.split()
-		print "commandsWords is: {}".format(commandsWords) 
+		#print "commandsWords is: {}".format(commandsWords) 
 
+		# Other data to send back to client
+		exception = ""
+		commandOutput = ""
+	
 		# Handle case of changing directories separately
+		# Done since using os.chdir here
 		if commandsWords[0] == "cd":
-			if commandsWords[1] == "~":
-				print "command to go to ~"
-				home = expanduser("~")
-				os.chdir(home)
-			else:
-				os.chdir(commandsWords[1])
+			try:
+				if commandsWords[1] == "~":
+					print "command to go to ~"
+					home = expanduser("~")
+					os.chdir(home)
+				else:
+					os.chdir(commandsWords[1])
+			except Exception as e:
+				print "Exception is: {}".format(e)
+				exception = e
 
 			# Send back current directory
 			newDir = os.getcwd()
 			print "New working directory: {}".format(newDir)
+
+			# Formatting data to send to client
+			sendBack = {}
+			sendBack["currentDir"] = newDir
+			sendBack["exception"] = str(exception)
+			sendBack["commandOutput"] = str(commandOutput)
+			print "sendBack is: {}".format(sendBack)
+			print "sendBacks exception is: {}".format(sendBack["exception"])
+			print "sendBacks commandOutput is: {}".format(sendBack["commandOutput"])
+			
+			sendBack = json.dumps(sendBack) #data serialized
+			s.sendall(sendBack)
 
 		# Other commands
 		else:

