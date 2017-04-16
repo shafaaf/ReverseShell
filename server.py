@@ -1,5 +1,8 @@
 # 
 # https://www.tutorialspoint.com/python/python_networking.htm
+# To see IP address, use command:
+# dig +short myip.opendns.com @resolver1.opendns.com
+
 
 import socket
 import sys

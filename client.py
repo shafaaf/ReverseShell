@@ -34,11 +34,11 @@ def connectToServer():
 		data = s.recv(1024)	# Receive command from server
 		#print "\n\nraw cmd from server is: {}".format(data)
 		data = json.loads(data)
-		print "formatted cmd from server is: {}".format(data)
+		#print "formatted cmd from server is: {}".format(data)
 
 		# Extract commands into separate words
 		commandsWords = data.split()
-		print "commandsWords is: {}".format(commandsWords)
+		#print "commandsWords is: {}".format(commandsWords)
 
 		# Other data to send back to client
 		exception = ""
@@ -64,6 +64,8 @@ def connectToServer():
 			
 			try:		
 				# Todo: Find better way to get output of script rather than just saying tried
+				# Todo: Cases of & at end or not to run script in background
+				# Todo: Right now scripts can be run with nohup command
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
 				
