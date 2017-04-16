@@ -35,8 +35,14 @@ def socketSetup():
 #------------------------------------------------------------------------------
 
 def sendCommands(conn):
+	print "will get current directory now"
+	currentClientPath = conn.recv(1024)
+	print "currentClientPath is: {}".format(currentClientPath)
+	
+	# Will send commands from this point on.
+	print "Enter commands from now on: "
 	while True:
-		print "Enter command: "
+		print currentClientPath + ":",
 		cmd = raw_input()
 		print "cmd entered in is: {}".format(cmd)
 		if cmd == 'quit':
@@ -45,14 +51,10 @@ def sendCommands(conn):
 			s.close()
 			sys.exit()
 
-		if len(str.encode(cmd)) > 0: #only send if actually data there
-			conn.send(str.encode(cmd))
-			# Response in bytes, then convert for chartacter encodnig to see as normal string
-			#1024 is buffer size
-			#clientResponse = str(conn.recv(1024), "utf-8") 
-			#print (clientResponse, end = "") # To resemble command line	
-			#print clientResponse
-			# Todo: the end thing here
+		if len(cmd) > 0: #only send if actually data there
+			conn.send(cmd)
+		else:
+			print "No command entered."
 
 #------------------------------------------------------------------------------
 
