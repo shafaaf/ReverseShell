@@ -66,8 +66,9 @@ def connectToServer():
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
 				# Todo: If run scripts, dont do this since stuck forever. e.g for ./runElasticsearch
-				commandOutput = cmd.stdout.read() + cmd.stderr.read()
-				print "commandOutput is: \n{}".format(commandOutput)
+				#commandOutput = cmd.stdout.read() + cmd.stderr.read()
+				#print "commandOutput is: \n{}".format(commandOutput)
+
 
 			except Exception as e:
 				print "exception is: {}".format(e)
