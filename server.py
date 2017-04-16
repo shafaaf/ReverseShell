@@ -52,20 +52,15 @@ def sendCommands(conn):
 			s.close()
 			sys.exit()
 
-
 		if len(cmd) > 0: # Only send if actually data there
-			print "\nSending command: {}\n".format(cmd)
 			cmd = json.dumps(cmd)
-			print "\nSending json.dumps command: {}\n".format(cmd)
 			conn.send(cmd)	# Send command
 
-			print "sending from server is fine. Now receiving"
-			clientReply = conn.recv(4096) # Get reply for command
-			print "receiving fine. now json loading"
-			print "clientReply is: {}".format(clientReply)
-			print "will now loads"
+			# Todo: decide on how much to receive as this causes error
+			clientReply = conn.recv(9990) # Get reply for command
+			#print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
-			print "clientReply after loads is: {}\n".format(clientReply)
+			#print "clientReply after loads is: {}\n".format(clientReply)
 			
 			# Check if there was an exception
 			if clientReply["exception"] == "":	# No exception so update path, print output

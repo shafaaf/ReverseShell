@@ -11,6 +11,8 @@ import subprocess
 import socket
 import json
 
+from subprocess import check_output
+
 
 # To get home directory
 from os.path import expanduser
@@ -26,17 +28,16 @@ def connectToServer():
 	print "Sending working directory: {}".format(currentDir)
 	s.sendall(currentDir)
 
-	# Keep  listening for instructions
+	# Keep listening for instructions
 	while True: 
 		print "Waiting for command..."
 		data = s.recv(1024)	# Receive command from server
-		print "\n\nraw cmd from server is: {}".format(data)
+		#print "\n\nraw cmd from server is: {}".format(data)
 		data = json.loads(data)
-		print "formatted cmd form server is: {}".format(data)
+		print "formatted cmd from server is: {}".format(data)
 
 		# Extract commands into separate words
 		commandsWords = data.split()
-		print "commandsWords is: {}".format(commandsWords) 
 
 		# Other data to send back to client
 		exception = ""
@@ -44,10 +45,11 @@ def connectToServer():
 	
 		# Handle case of changing directories separately
 		# Done since using os.chdir here
+		# Todo: Handle case of ~/whatever
 		if commandsWords[0] == "cd":
+			#print "\ncd commands\n"
 			try:
 				if commandsWords[1] == "~":
-					print "command to go to ~"
 					home = expanduser("~")
 					os.chdir(home)
 				else:
@@ -59,14 +61,11 @@ def connectToServer():
 		# Other commands
 		else:
 			try:
-				print "\nother commands\n"
-				# process = os.popen(data)
-				# results = str(process.read()) 
-				# print "results of command is: \n{}".format(results)
-				# commandOutput = results
-
+				#print "\nother commands\n"
+		
 				# Pipes any output to standard stream				
-				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
+				cmd = subprocess.Popen(data, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
+				# Todo: If run scripts, dont do this since stuck forever. e.g for ./runElasticsearch
 				commandOutput = cmd.stdout.read() + cmd.stderr.read()
 				print "commandOutput is: \n{}".format(commandOutput)
 
@@ -76,7 +75,7 @@ def connectToServer():
 
 		# Get new current directory regardless of changed or not
 		newDir = os.getcwd()
-		print "New working directory: {}".format(newDir)
+		#print "New working directory: {}".format(newDir)
 		
 		# Formatting data to send to client
 		sendBack = {}
@@ -89,7 +88,6 @@ def connectToServer():
 		
 		sendBackFormatted = json.dumps(sendBack) #data serialized
 		s.sendall(sendBackFormatted)
-
 		
 	s.close # Close the socket when done
 
