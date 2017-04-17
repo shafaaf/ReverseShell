@@ -17,8 +17,9 @@ def socketSetup():
 	
 	try:		
 		s = socket.socket() # Create a socket object	
-		host = socket.gethostname() # Get local machine name
-		port = 8080
+		#host = socket.gethostname() # Get local machine name
+		host = '192.168.0.9' # Get local machine name
+		port = 9999
 		print "socketSetup: host is: {} and port is: {}".format(host, port)
 
 		s.bind((host, port)) # Bind to the port

