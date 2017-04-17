@@ -35,36 +35,34 @@ def connectToServer():
 	while True: 
 		print "Waiting for command..."
 		data = s.recv(1024)	# Receive command from server
-		#print "\n\nraw cmd from server is: {}".format(data)
 		data = json.loads(data)
-		#print "formatted cmd from server is: {}".format(data)
-
+		
 		# Extract commands into separate words
 		commandsWords = data.split()
-		#print "commandsWords is: {}".format(commandsWords)
-
+		
 		# Other data to send back to client
 		exception = ""
 		commandOutput = ""
 	
-		# Handle case of changing directories separately
-		# Done since using os.chdir here
-		# Todo: Handle case of ~/whatever
+		# Handle case of changing directories
 		if commandsWords[0] == "cd":
-			#print "\ncd commands\n"
 			try:
-				if commandsWords[1] == "~":
+				if commandsWords[1] == "~": # Go to ~ (root) folder
 					home = expanduser("~")
 					os.chdir(home)
+				elif commandsWords[1][0] == "~": # Go to ~/somehting folder
+					home = expanduser("~")
+					os.chdir(home)
+					nextDir = commandsWords[1][2:]
+					os.chdir(nextDir)
 				else:
 					os.chdir(commandsWords[1])
 			except Exception as e:
 				print "Exception is: {}".format(e)
 				exception = e
 
-		# Other commands
-		else:
-			
+		# Other commands like ls, python --version etc
+		else:			
 			try:		
 				# Todo: Find better way to get output of script rather than just saying tried
 				# Todo: Handle cases of & at end or not to run script in background
@@ -75,8 +73,9 @@ def connectToServer():
 				
 				# Check if script or not
 				lastArg = commandsWords[len(commandsWords) - 1]
-				print "\ncommandsWords is: {}\n".format(lastArg)
-				if lastArg[-3:] == ".sh":	# script, so just return string saying ran script
+				#print "\ncommandsWords is: {}\n".format(lastArg)
+				# check if last arg is .sh so script, so just return string saying ran script
+				if lastArg[-3:] == ".sh":	
 					print "Its a script"
 					commandOutput = "Tried running the script."
 				else: # Not script, so return output from running command
@@ -90,7 +89,6 @@ def connectToServer():
 
 		# Get new current directory regardless of changed or not
 		newDir = os.getcwd()
-		#print "New working directory: {}".format(newDir)
 		
 		# Formatting data to send to client
 		sendBack = {}
