@@ -1,4 +1,5 @@
-# 
+#!/usr/bin/python
+ 
 # https://www.tutorialspoint.com/python/python_networking.htm
 # To see IP address, use command:
 # dig +short myip.opendns.com @resolver1.opendns.com
@@ -17,7 +18,7 @@ def socketSetup():
 	
 	try:		
 		s = socket.socket() # Create a socket object	
-		#host = socket.gethostname() # Get local machine name
+		print "socket.gethostname is: {}".format(socket.gethostname()) # Get local machine name
 		host = '192.168.0.9' # Get local machine name
 		port = 9999
 		print "socketSetup: host is: {} and port is: {}".format(host, port)

