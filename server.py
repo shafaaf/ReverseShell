@@ -62,7 +62,7 @@ def sendCommands(conn):
 			conn.send(cmd)	# Send command
 
 			# Todo: decide on how much to receive as this causes error
-			clientReply = conn.recv(9990) # Get reply for command
+			clientReply = conn.recv(999999) # Get reply for command
 			print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
 			#print "clientReply after loads is: {}\n".format(clientReply)
