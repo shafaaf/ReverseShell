@@ -99,7 +99,7 @@ def connectToServer():
 		sendBack["currentDir"] = newDir
 		sendBack["exception"] = str(exception)
 		sendBack["commandOutput"] = str(commandOutput)
-		# print "sendBack is: {}".format(sendBack)
+		print "sendBack is: {}".format(sendBack)
 		
 		sendBackFormatted = json.dumps(sendBack) #data serialized
 		s.sendall(sendBackFormatted)
