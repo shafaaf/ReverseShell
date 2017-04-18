@@ -11,6 +11,8 @@
 import os  
 import subprocess
 import socket
+#from socket import socket, AF_INET, SOCK_DGRAM
+
 import json
 
 from subprocess import check_output
@@ -18,13 +20,16 @@ from subprocess import check_output
 # To get home directory
 from os.path import expanduser
 
-def connectToServer():	
-	s = socket.socket()         # Create a socket object
+def connectToServer():
+	#print socket.getaddrinfo("www.python.org", 80, 0, 0, socket.SOL_TCP)
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	# Create a socket object
 	#host = socket.gethostname() # IP Address of server
 	host = '192.168.0.9' #confirmed for now: 192.168.0.9, Network is: 99.247.19.83
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
-	s.connect((host, port))
+	#s.connect(('2607:fea8:879f:f7b4:a5bf:e5e9:d8f1:2843', port,0,0))
+	s.connect((host,port))
+	print s
 
 	# Initially, send current working directory to server
 	currentDir = os.getcwd()
