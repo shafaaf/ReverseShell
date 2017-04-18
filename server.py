@@ -18,7 +18,7 @@ def socketSetup():
 	
 	try:		
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a socket object
-		host = 'localhost' # Use Private IP here
+		host = '172.31.38.163' # Use Private IP here
 		port = 9999
 		print "socket.gethostbyname(host) is: {}".format(socket.gethostbyname(host)) # Get local machine name
 		print "socketSetup: host is: {} and port is: {}".format(host, port)
@@ -63,7 +63,7 @@ def sendCommands(conn):
 
 			# Todo: decide on how much to receive as this causes error
 			clientReply = conn.recv(9990) # Get reply for command
-			#print "clientReply is: {}".format(clientReply)
+			print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
 			#print "clientReply after loads is: {}\n".format(clientReply)
 			
