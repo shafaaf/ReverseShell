@@ -15,12 +15,12 @@ Hackers can use and make others click on it through cd, usb etc.
 
 Note: Right now, scripts can be run in background without showing output message using "nohup whateverCommand". Do not run scripts using & as using trailing characters ".sh" as a lazy way to know its a script. Will later fix this maybe.
 
-How to use:
+## How to use:
 
-## Server
+### Server
 Change host variable in server.py to server machine's private IP Address. Then run command on server: <br />``` python server.py ```
 
-## Client
+### Client
 Change host variable in client.py to server machine's public IP Address. Then run command on target machine: <br />``` python client.py ```
 
 
