@@ -6,3 +6,4 @@ cp ./client.py ./trick
 cd trick
 pyinstaller --onefile client.py
 
+cd dist
