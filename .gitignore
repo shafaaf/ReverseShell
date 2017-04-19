@@ -161,8 +161,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Others
 *.pem
 trick/
 trick.*
+login*
 
 # End of https://www.gitignore.io/api/macos,windows,linux,python
