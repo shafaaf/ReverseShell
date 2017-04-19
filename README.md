@@ -13,6 +13,18 @@ In short, shell for any computer.
 
 Hackers can use and make others click on it through cd, usb etc.
 
+
+How to use:
+
+Change host variable in server.py to host machine's private IP Address.
+Run server on local machine or hosted machine using:
+``` python server.py ```
+
+Change host variable in client.py to host machine's public IP Address.
+Run client on target computer's machine:
+``` python client.py ```
+
+
 Resources:
 
 - Basic python socket programming: https://www.tutorialspoint.com/python/python_networking.htm
@@ -21,3 +33,5 @@ Resources:
 http://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 
 - Tutorial help: https://www.youtube.com/playlist?list=PL6gx4Cwl9DGCbpkBEMiCaiu_3OL-_Bz_8
+
+- Make standalone exeutables: http://www.pyinstaller.org/

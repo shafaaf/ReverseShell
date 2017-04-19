@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# This makes the standalone executable under trick folder
+
 rm -rf trick
 mkdir trick
 

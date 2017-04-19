@@ -12,7 +12,6 @@ import os
 import subprocess
 import socket
 import struct
-#from socket import socket, AF_INET, SOCK_DGRAM
 
 import json
 
