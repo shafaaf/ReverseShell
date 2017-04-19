@@ -5,3 +5,4 @@ mkdir trick
 cp ./client.py ./trick
 cd trick
 pyinstaller --onefile client.py
+
