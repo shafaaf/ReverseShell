@@ -22,7 +22,7 @@ from os.path import expanduser
 
 def connectToServer():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	# Create a socket object
-	host = '54.202.173.225' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
+	host = 'localhost' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
 	s.connect((host,port))
@@ -36,7 +36,7 @@ def connectToServer():
 	while True: 
 		print "Waiting for command..."
 		data = s.recv(1024)	# Receive command from server
-		#print "raw data from server: {}".format(data)
+		print "raw data from server: {}".format(data)
 		data = json.loads(data)
 		
 		# Extract commands into separate words
