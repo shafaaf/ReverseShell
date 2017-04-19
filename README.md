@@ -18,12 +18,10 @@ Note: Right now, scripts can be run in background without showing output message
 How to use:
 
 ## Server
-Change host variable in server.py to server machine's private IP Address. Then run command on server:
-``` python server.py ```
+Change host variable in server.py to server machine's private IP Address. Then run command on server: <br />``` python server.py ```
 
 ## Client
-Change host variable in client.py to server machine's public IP Address. Then run command on target machine:
-``` python client.py ```
+Change host variable in client.py to server machine's public IP Address. Then run command on target machine: <br />``` python client.py ```
 
 
 Resources:
