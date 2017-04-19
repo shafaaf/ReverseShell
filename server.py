@@ -19,7 +19,7 @@ def socketSetup():
 	
 	try:		
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a socket object
-		host = 'localhost' # Use Private IP here: 172.31.38.163, localhost
+		host = '172.31.38.163' # Use Private IP here: 172.31.38.163, localhost
 		port = 9999
 		print "socket.gethostbyname(host) is: {}".format(socket.gethostbyname(host)) # Get local machine name
 		print "socketSetup: host is: {} and port is: {}".format(host, port)

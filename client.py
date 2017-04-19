@@ -23,7 +23,7 @@ from os.path import expanduser
 
 def connectToServer():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	# Create a socket object
-	host = 'localhost' # Put in instance server's IPv4 Public IP - 54.202.173.225
+	host = '54.202.173.225' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
 	#s.connect(('2607:fea8:879f:f7b4:a5bf:e5e9:d8f1:2843', port,0,0))
