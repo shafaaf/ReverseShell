@@ -8,6 +8,7 @@
 import socket
 import sys
 import json
+import struct
 #------------------------------------------------------------------------------
 
 # Setup socket (allows computers to connect)
@@ -18,7 +19,7 @@ def socketSetup():
 	
 	try:		
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a socket object
-		host = '172.31.38.163' # Use Private IP here
+		host = 'localhost' # Use Private IP here: 172.31.38.163, localhost
 		port = 9999
 		print "socket.gethostbyname(host) is: {}".format(socket.gethostbyname(host)) # Get local machine name
 		print "socketSetup: host is: {} and port is: {}".format(host, port)
@@ -30,7 +31,7 @@ def socketSetup():
 		# Accept incoming connections. Should be a while true here
 		conn, address = s.accept()     # Blocking. Establish connection with client.
 		print 'Got a connection from', address
-		sendCommands(conn)
+		sendCommands(conn, s)
 		conn.close() # Close the connection
 
 	except socket.error as message:
@@ -39,7 +40,7 @@ def socketSetup():
 #------------------------------------------------------------------------------
 
 # Send terminal commands to target machine
-def sendCommands(conn):
+def sendCommands(conn, s):
 	# Get path first
 	currentClientPath = conn.recv(1024)
 	print "Current client path is: {}".format(currentClientPath)
@@ -62,10 +63,12 @@ def sendCommands(conn):
 			conn.send(cmd)	# Send command
 
 			# Todo: decide on how much to receive as this causes error
-			clientReply = conn.recv(999999) # Get reply for command
+			#clientReply = conn.recv() # Get reply for command
+			print s
+			clientReply = recv_msg(conn) # Get reply for command
 			print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
-			#print "clientReply after loads is: {}\n".format(clientReply)
+			print "clientReply after loads is: {}\n".format(clientReply)
 			
 			# Check if there was an exception
 			if clientReply["exception"] == "":	# No exception so update path, print output
@@ -80,6 +83,27 @@ def sendCommands(conn):
 
 		else:
 			print "No command entered."
+
+#------------------------------------------------------------------------------
+
+def recv_msg(sock):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(sock, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(sock, msglen)
+
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = ''
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
 
 #------------------------------------------------------------------------------
 
