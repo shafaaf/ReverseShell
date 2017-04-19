@@ -16,12 +16,12 @@ Hackers can use and make others click on it through cd, usb etc.
 
 How to use:
 
-Change host variable in server.py to host machine's private IP Address.
-Run server on local machine or hosted machine using:
+## Server
+Change host variable in server.py to server machine's private IP Address. Then run command on server:
 ``` python server.py ```
 
-Change host variable in client.py to host machine's public IP Address.
-Run client on target computer's machine:
+## Client
+Change host variable in client.py to server machine's public IP Address. Then run command on target machine:
 ``` python client.py ```
 
 
