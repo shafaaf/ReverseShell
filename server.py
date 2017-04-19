@@ -1,10 +1,5 @@
 #!/usr/bin/python
  
-# https://www.tutorialspoint.com/python/python_networking.htm
-# To see IP address, use command:
-# dig +short myip.opendns.com @resolver1.opendns.com
-
-
 import socket
 import sys
 import json
@@ -28,11 +23,11 @@ def socketSetup():
 		s.listen(5)  # 5 is bad connections it can take before refusing any new connections
 		print "Server waiting for connections on port: {}...".format(port)
 		
-		# Accept incoming connections. Should be a while true here
-		conn, address = s.accept()     # Blocking. Establish connection with client.
+		# Accept incoming connections.
+		conn, address = s.accept()     # Blocking. Establish connection with client
 		print 'Got a connection from', address
 		sendCommands(conn, s)
-		conn.close() # Close the connection
+		conn.close()
 
 	except socket.error as message:
 		print "socket error: {}".format(message)
@@ -64,11 +59,10 @@ def sendCommands(conn, s):
 
 			# Todo: decide on how much to receive as this causes error
 			#clientReply = conn.recv() # Get reply for command
-			print s
 			clientReply = recv_msg(conn) # Get reply for command
-			print "clientReply is: {}".format(clientReply)
+			#print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
-			print "clientReply after loads is: {}\n".format(clientReply)
+			#print "clientReply after loads is: {}\n".format(clientReply)
 			
 			# Check if there was an exception
 			if clientReply["exception"] == "":	# No exception so update path, print output
@@ -86,6 +80,8 @@ def sendCommands(conn, s):
 
 #------------------------------------------------------------------------------
 
+# These helper functions needed to send and receive longer messages.
+# From http://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 def recv_msg(sock):
     # Read message length and unpack it into an integer
     raw_msglen = recvall(sock, 4)

