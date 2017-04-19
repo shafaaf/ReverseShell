@@ -24,7 +24,7 @@ Change host variable in server.py to server machine's private IP Address. Then r
 Change host variable in client.py to server machine's public IP Address. Then run command on target machine: <br />``` python client.py ```
 
 
-Resources:
+## Resources:
 
 - Basic python socket programming: https://www.tutorialspoint.com/python/python_networking.htm
 
