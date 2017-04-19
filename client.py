@@ -102,9 +102,6 @@ def connectToServer():
 		sendBackFormatted = json.dumps(sendBack) #data serialized
 		#print "sendBackFormatted is: \n{}".format(sendBackFormatted)
 		
-		#sendBackFormatted = str.encode(sendBackFormatted)
-		#print "sendBack3 is: {}".format(sendBack)
-		
 		#s.sendall(sendBackFormatted)
 		send_msg(s, sendBackFormatted)
 		
@@ -112,6 +109,8 @@ def connectToServer():
 
 #------------------------------------------------------------------------------
 
+# This helper function needed to send and receive longer messages.
+# From http://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 def send_msg(sock, msg):
     # Prefix each message with a 4-byte length (network byte order)
     msg = struct.pack('>I', len(msg)) + msg
