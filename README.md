@@ -13,6 +13,7 @@ In short, shell for any computer.
 
 Hackers can use and make others click on it through cd, usb etc.
 
+Note: Right now, scripts can be run in background without showing output message using "nohup whateverCommand". Do not run scripts using & as using trailing characters ".sh" as a lazy way to know its a script. Will later fix this maybe.
 
 How to use:
 

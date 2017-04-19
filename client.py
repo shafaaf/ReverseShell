@@ -67,7 +67,7 @@ def connectToServer():
 		else:			
 			try:		
 				# Todo: Find better way to get output of script rather than just saying tried
-				# Todo: Handle cases of & at end or not to run script in background
+				# Todo: Handle cases of '&' at end or not to run script in background
 				# Todo: Right now, scripts can be run with "nohup" command
 
 				# Pipes any output to standard stream				
