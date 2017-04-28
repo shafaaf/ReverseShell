@@ -41,6 +41,7 @@ def socketSetup():
 		del allAddresses[:]
 			
 		# Accept incoming connections from multiple clients
+		# Todo: Need thread here which listens for connections
 		while 1:
 			try:
 				conn, address = s.accept()     # Blocking. Establish connection with a client
@@ -49,16 +50,56 @@ def socketSetup():
 				allAddresses.append(address)								
 
 				print '\nGot a connection from: {}'.format(address)
-				sendCommands(conn, s)
+				#sendCommands(conn, s)
+				startTurtle(conn,s)
 				conn.close()
-			except:
-				print "socket accept error"
+			except Exception as e:
+				print "socket accept error: {}".format(e)
 				exit(0)
 
 	except socket.error as message:
 		print "socket error: {}".format(message)
 
 #------------------------------------------------------------------------------
+
+def startTurtle(conn,s):
+	print "starting turtle"
+	while True:
+		print "turtle> ",
+		cmd = raw_input()
+		cmdWords = cmd.split()
+
+		# Handle case user wants to quit		
+		if cmd == 'quit':
+			print "Quitting program ..."
+			conn.close()
+			s.close()
+			sys.exit()
+
+		# Show current connections
+		elif cmd == 'list':
+			listConnections() 
+			
+		# Chose a connection
+		elif cmdWords[0] == 'select':	# connection selection command
+			if len(cmdWords) > 2:
+				print "Too many arguments passed in for select command. Try again"
+				continue
+			print "You have made a selection command."
+			# Get conn object from list if valid and exists
+			chosenClient = chooseClient(cmdWords[1])
+			if chosenClient is None:
+				print "Invalid clientId: {}. Try again ...".format(cmdWords[1])
+				continue
+			else:
+				print "Will try to connect to: {} ...".format(cmdWords[1])
+				print "chosenClient is: {}".format(chosenClient)
+				continue
+		else:
+			print "No command entered in turtle."
+
+#------------------------------------------------------------------------------
+
 # Displays all current connections
 # Todo: Now just sending in '1' as like a ping. Can make a proper message
 def listConnections():
@@ -95,6 +136,27 @@ def listConnections():
 
 #------------------------------------------------------------------------------
 
+
+# Select a client to connect to
+# Todo: Handle case where user selects a connection not there anymore
+def chooseClient(clientId):
+	print "You chose clientId: {}".format(clientId)
+	try:
+		clientId = int(clientId)
+		chosenClientConn = allConnections[clientId]
+		chosenClientAddr = allAddresses[clientId]
+		
+		chosenClient = {}
+		chosenClient["conn"] = chosenClientConn
+		chosenClient["addr"] = chosenClientAddr
+		return chosenClient
+
+	except Exception as e:
+		print "Exception in chooseClient func as: {}".format(e)
+		return None
+
+#------------------------------------------------------------------------------
+
 # Send terminal commands to target machine
 def sendCommands(conn, s):
 	# Get current path from client first
@@ -116,19 +178,6 @@ def sendCommands(conn, s):
 			conn.close()
 			s.close()
 			sys.exit()
-
-		# Show current connections
-		elif cmd == 'list':
-			listConnections() 
-			# Todo: finish this
-
-		# Chose a connection
-		elif cmdWords[0] == 'select':	# connection selection command
-			print "You have made a selection command"
-			#todo: get conn object
-			if conn is not None:
-				currentConnection = conn
-
 
 		elif len(cmd) > 0: # Only send if actually data there
 			cmd = json.dumps(cmd)

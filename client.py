@@ -30,7 +30,8 @@ def connectToServer():
 	# Initially, send current working directory to server
 	currentDir = os.getcwd()
 	print "Sending working directory: {}".format(currentDir)
-	s.sendall(currentDir)
+	#todo: Bring back
+	#s.sendall(currentDir)
 
 	# Keep listening for instructions
 	while True: 
