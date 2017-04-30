@@ -82,22 +82,22 @@ def startTurtle():
 			
 		# Chose a connection
 		elif cmdWords[0] == 'select':	#connection selection command
-			if len(cmdWords) > 2:
-				print "Too many arguments passed in for select command. Try again"
+			if (len(cmdWords) > 2) or (len(cmdWords) < 2):
+				print "Too less/smany arguments passed in for select command. Try again"
 				continue
 			print "You have made a selection command."
 			# Get conn object from list if valid and exists
 			chosenClient = selectClient(cmdWords[1])
 			if chosenClient is None:
-				print "Invalid clientId: {}. Try again ...".format(cmdWords[1])
+				print "Invalid clientId: {}. Try again.".format(cmdWords[1])
 				continue
 			else:
-				print "Will connect to: {} ...".format(cmdWords[1])
 				print "chosenClient is: {}".format(chosenClient)
+				print "Will connect to: {} ...".format(cmdWords[1])
 				sendCommands(chosenClient["conn"], s)
 
 		else:
-			print "No command entered in turtle."
+			print "No/Invalid command"
 
 #------------------------------------------------------------------------------
 
@@ -140,7 +140,7 @@ def listConnections():
 # Select a client to connect to
 # Todo: Handle case where user selects a connection not there anymore
 def selectClient(clientId):
-	print "You chose clientId: {}".format(clientId)
+	print "\nselectClient: You chose clientId: {}".format(clientId)
 	try:
 		clientId = int(clientId)
 		chosenClientConn = allConnections[clientId]
@@ -152,38 +152,43 @@ def selectClient(clientId):
 		return chosenClient
 
 	except Exception as e:
-		print "Exception in selectClient func as: {}".format(e)
+		print "Exception in selectClient function: {}".format(e)
 		return None
 
 #------------------------------------------------------------------------------
 
 # Send terminal commands to target machine
 def sendCommands(conn, s):
-	print "\n\nCan now send commands."
 	print "conn is: {} and s is: {}".format(conn, s)
 	
-	# Todo: Get current path from client first
+	print "First get current path."
 	cmd = 'getCurrentPath'
 	cmd = json.dumps(cmd)
 	conn.send(cmd)
 	currentClientPath = recv_msg(conn)
 	print "Current client path is: {}\n".format(currentClientPath)
 	
-	# Will send commands from this point on.
-	print "Enter terminal commands from now on.\n"
+	# Handle user commands as like a temrinal with some extra commands
+	print "Enter terminal commands from now on. type quit to quit program, type return to return to turtle prompt"
 	while True:
 		print currentClientPath + ">",
 		cmd = raw_input()
 		cmdWords = cmd.split()
 
-		# Handle case user wants to quit		
+		# User wants to quit		
 		if cmd == 'quit':
 			print "Quitting connection ..."
 			conn.close()
 			s.close()
 			sys.exit()
 
-		elif len(cmd) > 0: # Only send if actually data there
+		# User wants to return to turtle prompt
+		elif cmd == 'return':
+			print "Returning to turtle prompt ..."
+			return			
+
+		# Send proper terminal to target machine
+		elif len(cmd) > 0:
 			cmd = json.dumps(cmd)
 			conn.send(cmd)
 			clientReply = recv_msg(conn) # Get reply for command
