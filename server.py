@@ -6,12 +6,7 @@ import json
 import struct
 
 import threading
-#from queue import Queue
 
-numberOfThreads = 2
-jobNumber = [1,2]
-
-#queue = Queue()
 allConnections = [] # all connection objects
 allAddresses = [] # all addresses
 
@@ -32,7 +27,6 @@ def socketSetup():
 
 		s.bind((host, port)) # Bind to the port
 		s.listen(5)  # 5 is bad connections it can take before refusing any new connections
-		print "Server waiting for connections on port: {}...".format(port)
 		
 		# Close all connections and remove from lists
 		for c in allConnections:
@@ -41,13 +35,13 @@ def socketSetup():
 		del allAddresses[:]		
 		
 		threadSetup() # Start up listening thread
-		startTurtle() # Start up turtle		
+		startTurtle() # Start up turtle	which allows users to list/select connections	
 
 	except socket.error as message:
 		print "socket error: {}".format(message)
 
 #------------------------------------------------------------------------------
-# Thread which listens for connections and adds to lists
+# Setup thread which listens for connections and adds to appropriate lists
 
 def threadSetup():
 	t = threading.Thread(target = listenForConnections)
@@ -55,8 +49,8 @@ def threadSetup():
 	t.start()
 
 def listenForConnections():
-	print "Hi im the 2nd thread."
-	# Accept incoming connections from multiple clients
+	print "Started thread listening for connections on port: {}...\n".format(port)
+	# Accept incoming connections from clients
 	while 1:
 		try:
 			conn, address = s.accept()     # Blocking. Establish connection with a client
@@ -64,18 +58,15 @@ def listenForConnections():
 			allConnections.append(conn)
 			allAddresses.append(address)								
 			#print '\nGot a connection from: {}'.format(address)
-			#conn.close()
 
 		except Exception as e:
 			print "socket accept error: {}".format(e)
 			exit(0)
 
 
-
 #------------------------------------------------------------------------------
 # Starts turtle to list and select client to connect to
 def startTurtle():
-	print "starting turtle to list and select commands"
 	while True:
 		print "turtle> ",
 		cmd = raw_input()
@@ -104,7 +95,7 @@ def startTurtle():
 				print "Invalid clientId: {}. Try again.".format(cmdWords[1])
 				continue
 			else:
-				print "chosenClient is: {}".format(chosenClient)
+				#print "chosenClient is: {}".format(chosenClient)
 				print "Will connect to: {} ...".format(cmdWords[1])
 				sendCommands(chosenClient["conn"], s)
 
@@ -116,8 +107,8 @@ def startTurtle():
 # Displays all current connections
 # Todo: Now just sending in '1' as like a ping. Can make a proper message
 def listConnections():
-	print "unpinged allConnections is {}".format(allConnections)
-	print "unpinged allAddresses is {}".format(allAddresses)
+	#print "unpinged allConnections is {}".format(allConnections)
+	#print "unpinged allAddresses is {}".format(allAddresses)
 	print "Checking whether current connections still valid or not ..."
 	results = ''
 	for i, conn in enumerate(allConnections): # Use enumerate to get a counter variable
@@ -127,7 +118,7 @@ def listConnections():
 			conn.send(testPing) # Send just to see if get response
 			#print "Sent"
 			clientTestReply = recv_msg(conn)
-			#    print "clientTestReply is: {}".format(clientTestReply)
+			# print "clientTestReply is: {}".format(clientTestReply)
 			# Todo: For some weird reason, first ping to a disconected client
 			# returns none instead of catching exception , so deal with it
 			# separalte here
@@ -137,7 +128,7 @@ def listConnections():
 				del allAddresses[i]
 				continue
 		except:	# Client not connected anymore, so remove from lists
-			print "conn: {} not connected anymore".format(conn)
+			print "Not connected anymore is - conn: {}".format(conn)
 			del allConnections[i]
 			del allAddresses[i]
 			continue
@@ -152,7 +143,7 @@ def listConnections():
 # Select a client to connect to
 # Todo: Handle case where user selects a connection not there anymore
 def selectClient(clientId):
-	print "\nselectClient: You chose clientId: {}".format(clientId)
+	#print "selectClient: You chose clientId: {}".format(clientId)
 	try:
 		clientId = int(clientId)
 		chosenClientConn = allConnections[clientId]
@@ -171,9 +162,8 @@ def selectClient(clientId):
 
 # Send terminal commands to target machine
 def sendCommands(conn, s):
-	print "conn is: {} and s is: {}".format(conn, s)
-	
-	print "First get current path."
+	#print "\nsendCommands- conn is: {} and s is: {}".format(conn, s)
+	#print "First get current path."
 	cmd = 'getCurrentPath'
 	cmd = json.dumps(cmd)
 	conn.send(cmd)
