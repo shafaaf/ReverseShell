@@ -123,12 +123,12 @@ def listConnections():
 			# returns none instead of catching exception , so deal with it
 			# separalte here
 			if clientTestReply is None: # Client not connected anymore, so remove from lists
-				print "clientReply is None for some reason. So remove."
+				print "clientReply is None for some reason. So remove {}, {}.".format(allAddresses[i][0], allAddresses[i][1])
 				del allConnections[i]
 				del allAddresses[i]
 				continue
 		except:	# Client not connected anymore, so remove from lists
-			print "Not connected anymore is - conn: {}".format(conn)
+			print "Not connected anymore is - addr: {}, {}".format(allAddresses[i][0], allAddresses[i][1])
 			del allConnections[i]
 			del allAddresses[i]
 			continue
