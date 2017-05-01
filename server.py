@@ -35,6 +35,7 @@ def socketSetup():
 		del allAddresses[:]		
 		
 		threadSetup() # Start up listening thread
+		print "Started thread listening for connections on port: {}...\n".format(port)
 		startTurtle() # Start up turtle	which allows users to list/select connections	
 
 	except socket.error as message:
@@ -49,7 +50,6 @@ def threadSetup():
 	t.start()
 
 def listenForConnections():
-	print "Started thread listening for connections on port: {}...\n".format(port)
 	# Accept incoming connections from clients
 	while 1:
 		try:
