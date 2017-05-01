@@ -38,27 +38,39 @@ def socketSetup():
 		for c in allConnections:
 			c.close()
 		del allConnections[:]
-		del allAddresses[:]
-			
-		# Accept incoming connections from multiple clients
-		# Todo: Need thread here which listens for connections
-		while 1:
-			try:
-				conn, address = s.accept()     # Blocking. Establish connection with a client
-				conn.setblocking(1) # No timeout. Unsure from episode 8
-				allConnections.append(conn)
-				allAddresses.append(address)								
-
-				print '\nGot a connection from: {}'.format(address)
-				#sendCommands(conn, s)
-				startTurtle()
-				conn.close()
-			except Exception as e:
-				print "socket accept error: {}".format(e)
-				exit(0)
+		del allAddresses[:]		
+		
+		threadSetup() # Start up listening thread
+		startTurtle() # Start up turtle		
 
 	except socket.error as message:
 		print "socket error: {}".format(message)
+
+#------------------------------------------------------------------------------
+# Thread which listens for connections and adds to lists
+
+def threadSetup():
+	t = threading.Thread(target = listenForConnections)
+	t.daemon = True # Kill thread when main program dies
+	t.start()
+
+def listenForConnections():
+	print "Hi im the 2nd thread."
+	# Accept incoming connections from multiple clients
+	while 1:
+		try:
+			conn, address = s.accept()     # Blocking. Establish connection with a client
+			conn.setblocking(1) # Todo: No timeout. Unsure from episode 8
+			allConnections.append(conn)
+			allAddresses.append(address)								
+			#print '\nGot a connection from: {}'.format(address)
+			#conn.close()
+
+		except Exception as e:
+			print "socket accept error: {}".format(e)
+			exit(0)
+
+
 
 #------------------------------------------------------------------------------
 # Starts turtle to list and select client to connect to
@@ -171,42 +183,48 @@ def sendCommands(conn, s):
 	# Handle user commands as like a temrinal with some extra commands
 	print "Enter terminal commands from now on. type quit to quit program, type return to return to turtle prompt"
 	while True:
-		print currentClientPath + ">",
-		cmd = raw_input()
-		cmdWords = cmd.split()
+		try:
+			print currentClientPath + ">",
+			cmd = raw_input()
+			cmdWords = cmd.split()
 
-		# User wants to quit		
-		if cmd == 'quit':
-			print "Quitting connection ..."
-			conn.close()
-			s.close()
-			sys.exit()
+			# Quit whole program		
+			if cmd == 'quit':
+				print "Quitting connection ..."
+				conn.close()
+				s.close()
+				sys.exit()
 
-		# User wants to return to turtle prompt
-		elif cmd == 'return':
-			print "Returning to turtle prompt ..."
-			return			
+			# Return to turtle prompt
+			elif cmd == 'return':
+				print "Returning to turtle prompt ..."
+				return			
 
-		# Send proper terminal to target machine
-		elif len(cmd) > 0:
-			cmd = json.dumps(cmd)
-			conn.send(cmd)
-			clientReply = recv_msg(conn) # Get reply for command
-			#print "clientReply is: {}".format(clientReply)
-			clientReply = json.loads(clientReply) # Reply loaded into dict
-			#print "clientReply after loads is: {}\n".format(clientReply)
-			
-			# Check if there was an exception
-			if clientReply["exception"] == "":	# No exception
-				currentClientPath = clientReply["currentDir"] # Update path
-				if clientReply["commandOutput"] != "": # Print output of command also. E.g python --version
-					print clientReply["commandOutput"]
+			# Send proper terminal to target machine
+			elif len(cmd) > 0:
+				cmd = json.dumps(cmd)
+				conn.send(cmd)
+				clientReply = recv_msg(conn) # Get reply for command
+				#print "clientReply is: {}".format(clientReply)
+				clientReply = json.loads(clientReply) # Reply loaded into dict
+				#print "clientReply after loads is: {}\n".format(clientReply)
+				
+				# Check if there was an exception
+				if clientReply["exception"] == "":	# No exception
+					currentClientPath = clientReply["currentDir"] # Update path
+					if clientReply["commandOutput"] != "": # Print output of command also. E.g python --version
+						print clientReply["commandOutput"]
 
-			else: # Exception received, so just print it				
-				print clientReply["exception"]
+				else: # Exception received, so just print it				
+					print clientReply["exception"]
 
-		else:
-			print "No command entered."
+			else:
+				print "No command entered."
+
+		except Exception as e:
+			#print "Exception in sendCommands function: {}".format(e)
+			print "Connection lost so returning to turtle."
+			return
 
 #------------------------------------------------------------------------------
 
