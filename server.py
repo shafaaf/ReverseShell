@@ -22,7 +22,6 @@ def socketSetup():
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a socket object
 		host = 'localhost' # Use Private IP here: 172.31.38.163, localhost
 		port = 9999
-		print "socket.gethostbyname(host) is: {}".format(socket.gethostbyname(host)) # Get local machine name
 		print "socketSetup: host is: {} and port is: {}".format(host, port)
 
 		s.bind((host, port)) # Bind to the port
@@ -35,7 +34,7 @@ def socketSetup():
 		del allAddresses[:]		
 		
 		threadSetup() # Start up listening thread
-		print "Started thread listening for connections on port: {}...\n".format(port)
+		print "Started thread listening for connections on port: {}.\n".format(port)
 		startTurtle() # Start up turtle	which allows users to list/select connections	
 
 	except socket.error as message:
@@ -49,6 +48,7 @@ def threadSetup():
 	t.daemon = True # Kill thread when main program dies
 	t.start()
 
+# New thread starts from this function
 def listenForConnections():
 	# Accept incoming connections from clients
 	while 1:
@@ -67,6 +67,7 @@ def listenForConnections():
 #------------------------------------------------------------------------------
 # Starts turtle to list and select client to connect to
 def startTurtle():
+	print 'Enter commands from now on. Type "list" to show connections, type "quit" to quit whole program.'
 	while True:
 		print "turtle> ",
 		cmd = raw_input()
@@ -92,11 +93,11 @@ def startTurtle():
 			# Get conn object from list if valid and exists
 			chosenClient = selectClient(cmdWords[1])
 			if chosenClient is None:
-				print "Invalid clientId: {}. Try again.".format(cmdWords[1])
+				print "Invalid clientId: {}. Try again.\n".format(cmdWords[1])
 				continue
 			else:
 				#print "chosenClient is: {}".format(chosenClient)
-				print "Will connect to: {} ...".format(cmdWords[1])
+				print "Will connect to client {}.".format(cmdWords[1])
 				sendCommands(chosenClient["conn"], s)
 
 		else:
@@ -105,7 +106,6 @@ def startTurtle():
 #------------------------------------------------------------------------------
 
 # Displays all current connections
-# Todo: Now just sending in '1' as like a ping. Can make a proper message
 def listConnections():
 	#print "unpinged allConnections is {}".format(allConnections)
 	#print "unpinged allAddresses is {}".format(allAddresses)
@@ -128,20 +128,19 @@ def listConnections():
 				del allAddresses[i]
 				continue
 		except:	# Client not connected anymore, so remove from lists
-			print "Not connected anymore is - addr: {}, {}".format(allAddresses[i][0], allAddresses[i][1])
+			print "Not connected anymore is - addr: {}, {}. So remove.".format(allAddresses[i][0], allAddresses[i][1])
 			del allConnections[i]
 			del allAddresses[i]
 			continue
 		# Making string of connections
 		results = results + str(i) + '  ' + str(allAddresses[i][0]) + '  ' + str(allAddresses[i][1]) + "\n"
-	
+	print "Checking complete."
 	print "----- Clients List -----\n{}".format(results)
 	return
 
 #------------------------------------------------------------------------------
 
 # Select a client to connect to
-# Todo: Handle case where user selects a connection not there anymore
 def selectClient(clientId):
 	#print "selectClient: You chose clientId: {}".format(clientId)
 	try:
@@ -168,10 +167,10 @@ def sendCommands(conn, s):
 	cmd = json.dumps(cmd)
 	conn.send(cmd)
 	currentClientPath = recv_msg(conn)
-	print "Current client path is: {}\n".format(currentClientPath)
+	print "\nCurrent client path is: {}".format(currentClientPath)
 	
 	# Handle user commands as like a temrinal with some extra commands
-	print "Enter terminal commands from now on. type quit to quit program, type return to return to turtle prompt"
+	print 'Enter terminal commands from now on. Type "quit" to quit program, type "return" to return to turtle prompt'
 	while True:
 		try:
 			print currentClientPath + ">",
@@ -188,7 +187,7 @@ def sendCommands(conn, s):
 			# Return to turtle prompt
 			elif cmd == 'return':
 				print "Returning to turtle prompt ..."
-				return			
+				startTurtle()			
 
 			# Send proper terminal to target machine
 			elif len(cmd) > 0:
