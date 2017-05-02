@@ -240,6 +240,6 @@ def recvall(sock, n):
 
 #------------------------------------------------------------------------------
 
-# Example program
+# To start up program, using: python server.py
 if __name__ == "__main__":
 	socketSetup()

@@ -20,7 +20,7 @@ from os.path import expanduser
 
 def connectToServer():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	# Create a socket object
-	host = 'localhost' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
+	host = '54.202.173.225' # Put in instance server's IPv4 Public IP - 54.202.173.225, localhost
 	port = 9999                # Port of server
 	print "Trying to connect to: {} at {}".format(host, port)
 	s.connect((host,port))
@@ -117,6 +117,6 @@ def send_msg(sock, msg):
 
 #------------------------------------------------------------------------------
 
-# Example program
+# To start up program, using: python client.py
 if __name__ == "__main__":
 	connectToServer()
