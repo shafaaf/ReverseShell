@@ -23,6 +23,9 @@ Change host variable in server.py to server machine's private IP Address. Then r
 ### Client
 Change host variable in client.py to server machine's public IP Address. Then run command on target machine: <br/>``` python client.py ```
 
+Then using server program's turtle prompt, can use the commands "list" to list all connections and "select clientid" to select a client to connect to. 
+After selecting, can pass in terminal commands to run on client machine. Can enter "return" to return to turtle prompt or "quit" to quit whole program.
+
 ### Get executable client and run it
 ```./cleanUp.sh```<br/>
 ```./setup.sh```<br/><br/>
